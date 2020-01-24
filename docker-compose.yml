@@ -1,0 +1,33 @@
+version: '3.4'
+
+services:
+  zookeeper:
+    image: nexus.iii-conv.com/zookeeper:latest
+    healthcheck:
+      test: ["CMD", "bash", "-c", "[[ \"$$(exec 3<>/dev/tcp/localhost/2181 && echo ruok >&3 && cat <&3)\" == 'imok' ]] && exit 0 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      # It takes retries consecutive failures of the health check for the container to be considered unhealthy.
+      # thus: 10s * 10s = 100s, pretty enough to start ONE zookeeper (even when another services vie for CPU)
+      start_period: 10s
+      retries: 10
+    restart: always
+    ports:
+      - "2181:2181"
+    environment:
+      ZOO_MY_ID: 1
+
+  kafka:
+    image: nexus.iii-conv.com/kafka:2-1-1-official
+    restart: always
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      HOSTNAME_COMMAND: "echo kafka"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      BROKER_ID_COMMAND: "echo 1"
+      CONNECT_BOOTSTRAP_SERVERS: "kafka:9092"
+
+
