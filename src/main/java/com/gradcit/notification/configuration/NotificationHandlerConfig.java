@@ -1,6 +1,5 @@
 package com.gradcit.notification.configuration;
 
-
 import com.gradcit.notification.model.Notification;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +27,7 @@ public class NotificationHandlerConfig {
     props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
     props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
     props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-    props.put(ConsumerConfig.GROUP_ID_CONFIG, "json");
+    props.put(ConsumerConfig.GROUP_ID_CONFIG, "notification");
     props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
     return props;
   }
@@ -38,7 +37,7 @@ public class NotificationHandlerConfig {
     return new DefaultKafkaConsumerFactory<>(
         consumerConfigs(),
         new StringDeserializer(),
-        new JsonDeserializer<>(Notification.class));
+        new JsonDeserializer<>(Notification.class, false));
   }
 
   @Bean
