@@ -1,20 +1,20 @@
 package com.gradcit.notification.model;
 
-import java.security.Timestamp;
+import java.sql.Timestamp;
 import lombok.Data;
 import org.json.JSONObject;
 
 @Data
 public class Notification {
 
-  private JSONObject requestedData;
-  private JSONObject body;
+  private Long userId;
+  private String imgId;
   private String token;
   private String recType;
-  private String imgId;
-  private Long userId;
+  private JSONObject body;
   private String username;
-  private Timestamp postDate;
   private Integer badgeNum;
+  private Timestamp postDate;
+  private JSONObject requestedData;
 
 }

@@ -1,7 +1,8 @@
 plugins {
 	id 'org.springframework.boot' version '2.1.11.RELEASE'
 	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
-	id 'java'
+    id 'io.franzbecker.gradle-lombok' version '2.1'
+    id 'java'
 }
 
 group = 'com.gradcit'
@@ -13,9 +14,6 @@ repositories {
 }
 
 dependencies {
-	compileOnly 'org.projectlombok:lombok:1.18.10'
-
-	annotationProcessor 'org.projectlombok:lombok:1.18.10'
 
 	compile 'org.springframework.security:spring-security-jwt:1.0.2.RELEASE'
 	compile 'org.json:json:20180813'

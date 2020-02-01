@@ -1,11 +1,16 @@
 package com.gradcit.notification.service;
 
+import com.gradcit.notification.messaging.MessageHandler;
+import com.gradcit.notification.model.Notification;
 import com.gradcit.notification.utils.JWTUtils;
 import com.notnoop.apns.APNS;
 import com.notnoop.apns.ApnsService;
 import java.sql.Timestamp;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
 
 @Service
 public class NotificationService {
@@ -13,12 +18,16 @@ public class NotificationService {
   private static final String FILE_NAME = "gradcit.p12";
   private static final String PASSWORD = "hbb38nJBoij84d2jknslapkasjw";
 
-  //TODO: make all params as a POJO
-  public void sendNotification(JSONObject requestedData, JSONObject body,
-      String token, String recType, String imgId, Long userId, String username, Timestamp postDate, Integer badgeNum) {
+  private final Logger logger = LoggerFactory.getLogger(MessageHandler.class);
 
-    JSONObject aps = getAps(body);
-    JSONObject request = getRequest(requestedData, aps, recType, imgId, userId, username, postDate, badgeNum);
+  public void sendNotification(Notification notification) {
+    logger.info("Start sending of notification: {}", notification);
+
+    JSONObject aps = getAps(notification.getBody());
+    JSONObject request = getRequest(notification.getRequestedData(), aps, notification.getRecType(),
+        notification.getImgId(), notification.getUserId(), notification.getUsername(),
+        notification.getPostDate(), notification.getBadgeNum());
+
     String payload = request.toString();
 
     ApnsService service = APNS.newService()
@@ -26,8 +35,8 @@ public class NotificationService {
         .withSandboxDestination()
         .build();
 
-    service.push(token, payload);
-
+    service.push(notification.getToken(), payload);
+    logger.info("Finish sending of notification: {}", notification);
   }
 
   /*
@@ -42,8 +51,8 @@ public class NotificationService {
    * 4 - новый подписчик
    * 5 - оценен комментарий
    */
-  private JSONObject getRequest(JSONObject requestedData, JSONObject aps, String recType, String imgId, Long userId,
-      String username, Timestamp postDate, Integer badgeNum) {
+  private JSONObject getRequest(JSONObject requestedData, JSONObject aps, String recType,
+      String imgId, Long userId, String username, Timestamp postDate, Integer badgeNum) {
     String jwtToken = JWTUtils.generateJWTToken(userId);
 
     JSONObject request = new JSONObject();
